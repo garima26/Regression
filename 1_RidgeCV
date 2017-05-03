@@ -1,0 +1,38 @@
+# Imports
+import numpy as np
+import pandas as pd
+from sklearn import preprocessing
+
+import time
+import datetime
+
+from sklearn.linear_model import RidgeCV,ElasticNetCV
+from sklearn.model_selection import KFold
+from sklearn.preprocessing import StandardScaler,scale, PolynomialFeatures,FunctionTransformer
+from sklearn.metrics import make_scorer, mean_squared_error
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+# RidgeCV
+# Try various values of alpha- this is the only hyperparameter in RidgeCV
+##alpha = np.logspace(-2,6,250)
+alpha = np.linspace(85,250,250)
+
+# Using RMSE to score in CV steps
+def rms(y_true, y_pred):
+    return np.sqrt(mean_squared_error(y_true, y_pred))
+rmse  = make_scorer(rms, greater_is_better=False)
+
+model=RidgeCV(alphas=alpha, fit_intercept=True, normalize=False, scoring=rmse, cv=10)
+model.fit(X_train,Y_train)
+
+Y_pred=model.predict(X_train)
+rmse_train = np.sqrt(mean_squared_error(Y_train, Y_pred))
+print rmse_train
+
+# Plot
+plt.figure(figsize=(50,20),dpi=300)
+
+plt.plot(t_data_train['REPORT_DATE_ID'],Y_train)
+plt.plot(t_data_train['REPORT_DATE_ID'],Y_pred,'r--')
